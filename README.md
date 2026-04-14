@@ -180,7 +180,7 @@ Get up and running in under 2 minutes:
 ### Step 2: Install Rules (Required)
 
 > WARNING: **Important:** Claude Code plugins cannot distribute `rules` automatically. Install them manually:
-
+>
 > If your local Claude setup was wiped or reset, that does not mean you need to repurchase ECC. Start with `ecc list-installed`, then run `ecc doctor` and `ecc repair` before reinstalling anything. That usually restores ECC-managed files without rebuilding your setup. If the problem is account or marketplace access for ECC Tools, handle billing/account recovery separately.
 
 ```bash
@@ -727,9 +727,27 @@ mkdir -p ~/.claude/commands
 cp everything-claude-code/commands/*.md ~/.claude/commands/
 ```
 
-#### Add hooks to settings.json
+#### Install hooks
 
-Copy the hooks from `hooks/hooks.json` to your `~/.claude/settings.json`.
+Do not copy the raw repo `hooks/hooks.json` into `~/.claude/settings.json` or `~/.claude/hooks/hooks.json`. That file is plugin/repo-oriented and still contains `${CLAUDE_PLUGIN_ROOT}` placeholders, so raw copying is not a supported manual install path.
+
+Use the installer to install only the Claude hook runtime so command paths are rewritten correctly:
+
+```bash
+# macOS / Linux
+bash ./install.sh --target claude --modules hooks-runtime
+```
+
+```powershell
+# Windows PowerShell
+pwsh -File .\install.ps1 --target claude --modules hooks-runtime
+```
+
+That writes resolved hooks to `~/.claude/hooks/hooks.json` and leaves any existing `~/.claude/settings.json` untouched.
+
+If you installed ECC via `/plugin install`, do not copy those hooks into `settings.json`. Claude Code v2.1+ already auto-loads plugin `hooks/hooks.json`, and duplicating them in `settings.json` causes duplicate execution and `${CLAUDE_PLUGIN_ROOT}` resolution failures.
+
+Windows note: the Claude config directory is `%USERPROFILE%\\.claude`, not `~/claude`.
 
 #### Configure MCPs
 
